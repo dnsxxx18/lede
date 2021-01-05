@@ -1,159 +1,140 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title>OpenWrt-CI/openwrt-ci.yml at master · KFERMercer/OpenWrt-CI</title>
-  <meta name="Description" content="OpenWrt CI 在线集成自动编译环境. Contribute to KFERMercer/OpenWrt-CI development by creating an account on GitHub.">
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="1561.6">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 14.0px; font: 12.0px Courier; color: #000000; -webkit-text-stroke: #000000}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 14.0px; font: 12.0px Courier; color: #000000; -webkit-text-stroke: #000000; min-height: 14.0px}
-    span.s1 {font-kerning: none}
-    span.s2 {font: 12.0px 'PingFang SC'; font-kerning: none}
-  </style>
-</head>
-<body>
-<p class="p1"><span class="s1">#</span></p>
-<p class="p1"><span class="s1"># This is free software, lisence use MIT.</span></p>
-<p class="p1"><span class="s1">#<span class="Apple-converted-space"> </span></span></p>
-<p class="p1"><span class="s1"># Copyright (C) 2019 P3TERX &lt;https://p3terx.com&gt;</span></p>
-<p class="p1"><span class="s1"># Copyright (C) 2020 KFERMercer &lt;KFER.Mercer@gmail.com&gt;</span></p>
-<p class="p1"><span class="s1">#<span class="Apple-converted-space"> </span></span></p>
-<p class="p1"><span class="s1"># &lt;https://github.com/KFERMercer/OpenWrt-CI&gt;</span></p>
-<p class="p1"><span class="s1">#</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">name: OpenWrt-CI</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">on:</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>push:</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>branches:<span class="Apple-converted-space"> </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>- master</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span># schedule:</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span># <span class="Apple-converted-space">  </span>- cron: 0 20 * * *</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>release:</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>types: [published]</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">jobs:</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>build_openwrt:</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>name: Build OpenWrt firmware</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>runs-on: ubuntu-latest</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if: github.event.repository.owner.id == github.event.sender.id</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>steps:</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>- name: Checkout</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>uses: actions/checkout@v2</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>with:</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>ref: master</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>- name: Space cleanup</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>env:</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>DEBIAN_FRONTEND: noninteractive</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>run: |</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>docker rmi `docker images -q`</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>sudo -E apt-get -y purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* mysql* php* android*</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>sudo -E apt-get update</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>sudo -E apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3 unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs gcc-multilib g++-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler antlr3 gperf swig libtinfo5</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>sudo -E apt-get -y autoremove --purge</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>sudo -E apt-get clean</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span># sudo mkdir -p -m 777 /mnt/openwrt/bin /mnt/openwrt/build_dir/host /mnt/openwrt/build_dir/hostpkg /mnt/openwrt/dl /mnt/openwrt/feeds /mnt/openwrt/staging_dir</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span># ln -s /mnt/openwrt/bin ./bin</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span># mkdir -p ./build_dir</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span># ln -s -f /mnt/openwrt/build_dir/host ./build_dir/host</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span># ln -s -f /mnt/openwrt/build_dir/hostpkg ./build_dir/hostpkg</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span># ln -s /mnt/openwrt/dl ./dl</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span># ln -s /mnt/openwrt/feeds ./feeds</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span># ln -s /mnt/openwrt/staging_dir ./staging_dir</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>df -h</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>- name: Update feeds</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>run: |</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>./scripts/feeds update -a</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>./scripts/feeds install -a</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>- name: Generate configuration file</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>run: |</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>rm -f ./.config*</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>touch ./.config</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>#</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span># </span><span class="s2">在</span><span class="s1"> cat &gt;&gt; .config &lt;&lt;EOF </span><span class="s2">到</span><span class="s1"> EOF </span><span class="s2">之间粘贴你的编译配置</span><span class="s1">, </span><span class="s2">需注意缩进关系</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span># </span><span class="s2">例如</span><span class="s1">:</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>cat &gt;&gt; .config &lt;&lt;EOF</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>CONFIG_TARGET_IMAGES_GZIP=y</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>CONFIG_KERNEL_BUILD_USER="OpenWrt-CI"</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>CONFIG_KERNEL_BUILD_DOMAIN="Azure"</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>EOF</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>#</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span># ===============================================================</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>#<span class="Apple-converted-space"> </span></span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>sed -i 's/^[ \t]*//g' ./.config</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>make defconfig</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>- name: Make download</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>run: |</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>make download -j8 || make download -j1 V=s</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>rm -rf $(find ./dl/ -size -1024c)</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>df -h</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>- name: Compile firmware</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>run: |</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>make -j$(nproc) || make -j1 V=s</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>echo "======================="</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>echo "Space usage:"</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>echo "======================="</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>df -h</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>echo "======================="</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>du -h ./ --max-depth=1</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>du -h /mnt/openwrt/ --max-depth=1 || true</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>- name: Prepare artifact</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>run: |</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>mkdir -p ./artifact/firmware</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>mkdir -p ./artifact/package</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>mkdir -p ./artifact/buildinfo</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>rm -rf $(find ./bin/targets/ -type d -name "packages")</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>cp -rf $(find ./bin/targets/ -type f) ./artifact/firmware/</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>cp -rf $(find ./bin/packages/ -type f -name "*.ipk") ./artifact/package/</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>cp -rf $(find ./bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>- name: Deliver buildinfo</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>uses: actions/upload-artifact@v2</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>with:</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>name: OpenWrt_buildinfo</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>path: ./artifact/buildinfo/</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>- name: Deliver package</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>uses: actions/upload-artifact@v2</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>with:</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>name: OpenWrt_package</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>path: ./artifact/package/</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>- name: Deliver firmware</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>uses: actions/upload-artifact@v2</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>with:</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>name: OpenWrt_firmware</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>path: ./bin/targets/</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>- name: Upload release asset</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if: github.event == 'release'</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>uses: svenstaro/upload-release-action@v2</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>with:</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>repo_token: ${{ secrets.YOURTOKEN }}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>file: ./artifact/firmware/*</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>tag: ${{ github.ref }}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>file_glob: true</span></p>
-</body>
-</html>
+#
+# This is free software, lisence use MIT.
+# 
+# Copyright (C) 2019 P3TERX <https://p3terx.com>
+# Copyright (C) 2020 KFERMercer <KFER.Mercer@gmail.com>
+# 
+# <https://github.com/KFERMercer/OpenWrt-CI>
+#
+ 
+name: OpenWrt-CI
+ 
+on:
+  push:
+    branches: 
+      - master
+  # schedule:
+  #   - cron: 0 20 * * *
+  release:
+    types: [published]
+ 
+jobs:
+ 
+  build_openwrt:
+ 
+    name: Build OpenWrt firmware
+ 
+    runs-on: ubuntu-latest
+ 
+    if: github.event.repository.owner.id == github.event.sender.id
+ 
+    steps:
+ 
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: master
+ 
+      - name: Space cleanup
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          docker rmi `docker images -q`
+          sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d
+          sudo -E apt-get -y purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* mysql* php* android*
+          sudo -E apt-get update
+          sudo -E apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3 unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs gcc-multilib g++-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler antlr3 gperf swig libtinfo5
+          sudo -E apt-get -y autoremove --purge
+          sudo -E apt-get clean
+ 
+          # sudo mkdir -p -m 777 /mnt/openwrt/bin /mnt/openwrt/build_dir/host /mnt/openwrt/build_dir/hostpkg /mnt/openwrt/dl /mnt/openwrt/feeds /mnt/openwrt/staging_dir
+          # ln -s /mnt/openwrt/bin ./bin
+          # mkdir -p ./build_dir
+          # ln -s -f /mnt/openwrt/build_dir/host ./build_dir/host
+          # ln -s -f /mnt/openwrt/build_dir/hostpkg ./build_dir/hostpkg
+          # ln -s /mnt/openwrt/dl ./dl
+          # ln -s /mnt/openwrt/feeds ./feeds
+          # ln -s /mnt/openwrt/staging_dir ./staging_dir
+ 
+          df -h
+ 
+      - name: Update feeds
+        run: |
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+ 
+      - name: Generate configuration file
+        run: |
+          rm -f ./.config*
+          touch ./.config
+ 
+          #
+          # 在 cat >> .config <<EOF 到 EOF 之间粘贴你的编译配置, 需注意缩进关系
+          # 例如:
+ 
+          cat >> .config <<EOF
+          CONFIG_TARGET_IMAGES_GZIP=y
+          CONFIG_KERNEL_BUILD_USER="OpenWrt-CI"
+          CONFIG_KERNEL_BUILD_DOMAIN="Azure"
+          EOF
+ 
+          #
+          # ===============================================================
+          # 
+ 
+          sed -i 's/^[ \t]*//g' ./.config
+          make defconfig
+ 
+      - name: Make download
+        run: |
+          make download -j8 || make download -j1 V=s
+          rm -rf $(find ./dl/ -size -1024c)
+          df -h
+ 
+      - name: Compile firmware
+        run: |
+          make -j$(nproc) || make -j1 V=s
+          echo "======================="
+          echo "Space usage:"
+          echo "======================="
+          df -h
+          echo "======================="
+          du -h ./ --max-depth=1
+          du -h /mnt/openwrt/ --max-depth=1 || true
+ 
+      - name: Prepare artifact
+        run: |
+          mkdir -p ./artifact/firmware
+          mkdir -p ./artifact/package
+          mkdir -p ./artifact/buildinfo
+          rm -rf $(find ./bin/targets/ -type d -name "packages")
+          cp -rf $(find ./bin/targets/ -type f) ./artifact/firmware/
+          cp -rf $(find ./bin/packages/ -type f -name "*.ipk") ./artifact/package/
+          cp -rf $(find ./bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/
+ 
+      - name: Deliver buildinfo
+        uses: actions/upload-artifact@v2
+        with:
+          name: OpenWrt_buildinfo
+          path: ./artifact/buildinfo/
+ 
+      - name: Deliver package
+        uses: actions/upload-artifact@v2
+        with:
+          name: OpenWrt_package
+          path: ./artifact/package/
+ 
+      - name: Deliver firmware
+        uses: actions/upload-artifact@v2
+        with:
+          name: OpenWrt_firmware
+          path: ./bin/targets/
+ 
+      - name: Upload release asset
+        if: github.event == 'release'
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.YOURTOKEN }}
+          file: ./artifact/firmware/*
+          tag: ${{ github.ref }}
+          file_glob: true
