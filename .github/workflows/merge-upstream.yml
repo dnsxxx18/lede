@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title>OpenWrt-CI/merge-upstream.yml at master · dnsxxx18/OpenWrt-CI</title>
+  <meta name="Description" content="OpenWrt CI 在线集成自动编译环境. Contribute to dnsxxx18/OpenWrt-CI development by creating an account on GitHub.">
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="1561.6">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 14.0px; font: 12.0px Courier; color: #000000; -webkit-text-stroke: #000000}
+    span.s1 {font-kerning: none}
+  </style>
+</head>
+<body>
+<p class="p1"><span class="s1">#</span></p>
+<p class="p1"><span class="s1"># This is free software, lisence use MIT.</span></p>
+<p class="p1"><span class="s1">#<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"># Copyright (C) 2020 KFERMercer &lt;KFER.Mercer@gmail.com&gt;</span></p>
+<p class="p1"><span class="s1">#<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"># &lt;https://github.com/KFERMercer/OpenWrt-CI&gt;</span></p>
+<p class="p1"><span class="s1">#</span></p>
+<p class="p1"><span class="s1"><br>
+</span></p>
+<p class="p1"><span class="s1">name: Merge-upstream</span></p>
+<p class="p1"><span class="s1"><br>
+</span></p>
+<p class="p1"><span class="s1">on:</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>push:</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>branches:<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>- master</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>schedule:</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>- cron: 30 19 * * *</span></p>
+<p class="p1"><span class="s1"><br>
+</span></p>
+<p class="p1"><span class="s1">jobs:</span></p>
+<p class="p1"><span class="s1"><br>
+</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>merge:</span></p>
+<p class="p1"><span class="s1"><br>
+</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>runs-on: ubuntu-latest</span></p>
+<p class="p1"><span class="s1"><br>
+</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>steps:</span></p>
+<p class="p1"><span class="s1"><br>
+</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>- name: Checkout</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>uses: actions/checkout@v2</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>with:</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>ref: master</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>fetch-depth: 0</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>lfs: true</span></p>
+<p class="p1"><span class="s1"><br>
+</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>- name: Set git identity</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>run : |</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>git config --global user.name "github-actions[bot]"</span></p>
+<p class="p1"><span class="s1"><br>
+</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>- name: Load upstream commits</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>run: git pull https://github.com/coolsnowwolf/lede.git --log --no-commit</span></p>
+<p class="p1"><span class="s1"><br>
+</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>- name: Apply commit changes</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>run: |</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if [ -f ./.git/MERGE_MSG ]; then</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>mkdir ./tmp &amp;&amp; cp ./.git/MERGE_MSG ./tmp/message</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>sed -i "1c [bot] AutoMerging: merge all upstream's changes:" ./tmp/message</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>sed -i '/^\#.*/d' ./tmp/message</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>git commit --file="./tmp/message"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>else</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>echo "There is no merge commits."</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>fi</span></p>
+<p class="p1"><span class="s1"><br>
+</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>- name: Push Commits</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>env:</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>DOWNSTREAM_BRANCH: master</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>run: git push origin $DOWNSTREAM_BRANCH</span></p>
+</body>
+</html>
